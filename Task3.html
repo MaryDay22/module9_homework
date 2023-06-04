@@ -1,0 +1,51 @@
+<!-- Задача №3 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Приложение</title>
+  <style>
+    .message {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <input id="numberInput" type="number" min="1" max="10" placeholder="Введите число от 1 до 10">
+  <button id="submitButton">Отправить</button>
+  <div id="messageContainer" class="message"></div>
+
+  <script>
+    function displayMessage(message) {
+      var messageContainer = document.getElementById("messageContainer");
+      messageContainer.textContent = message;
+    }
+
+    function fetchData(url) {
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          console.log(response);
+        }
+      };
+      xhr.open("GET", url, true);
+      xhr.send();
+    }
+
+    function handleClick() {
+      var numberInput = document.getElementById("numberInput");
+      var number = parseInt(numberInput.value);
+      
+      if (number >= 1 && number <= 10) {
+        var url = "https://picsum.photos/v2/list?limit=" + number;
+        fetchData(url);
+      } else {
+        displayMessage("Число вне диапазона от 1 до 10");
+      }
+    }
+
+    var submitButton = document.getElementById("submitButton");
+    submitButton.addEventListener("click", handleClick);
+  </script>
+</body>
+</html>

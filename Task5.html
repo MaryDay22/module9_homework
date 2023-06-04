@@ -1,0 +1,130 @@
+<!-- Задача №5 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Приложение</title>
+  <style>
+    .message {
+      margin-top: 10px;
+    }
+
+    .image-list {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .image-list-item {
+      width: 200px;
+      height: 200px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Номер страницы</h2>
+  <input id="pageInput" type="number" min="1" max="10" placeholder="Введите номер страницы">
+
+  <h2>Лимит</h2>
+  <input id="limitInput" type="number" min="1" max="10" placeholder="Введите лимит">
+
+  <button id="submitButton">Запрос</button>
+
+  <div id="messageContainer" class="message"></div>
+
+  <div id="imageList" class="image-list"></div>
+
+  <script>
+    function displayMessage(message) {
+      var messageContainer = document.getElementById("messageContainer");
+      messageContainer.textContent = message;
+    }
+
+    function fetchData(page, limit) {
+      var url = "https://picsum.photos/v2/list?page=" + page + "&limit=" + limit;
+
+      fetch(url)
+        .then(function(response) {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Ошибка HTTP: " + response.status);
+          }
+        })
+        .then(function(data) {
+          console.log(data);
+          displayImages(data);
+          saveLastRequest(page, limit);
+        })
+        .catch(function(error) {
+          console.log("Ошибка запроса: " + error.message);
+        });
+    }
+
+    function displayImages(images) {
+      var imageList = document.getElementById("imageList");
+      imageList.innerHTML = "";
+
+      for (var i = 0; i < images.length; i++) {
+        var imageUrl = images[i].download_url;
+        var imageListItem = document.createElement("div");
+        imageListItem.classList.add("image-list-item");
+        imageListItem.style.backgroundImage = "url(" + imageUrl + ")";
+        imageList.appendChild(imageListItem);
+      }
+    }
+
+    function saveLastRequest(page, limit) {
+      var lastRequest = {
+        page: page,
+        limit: limit
+      };
+
+      localStorage.setItem("lastRequest", JSON.stringify(lastRequest));
+    }
+
+    function getLastRequest() {
+      var lastRequest = localStorage.getItem("lastRequest");
+
+      if (lastRequest) {
+        return JSON.parse(lastRequest);
+      }
+
+      return null;
+    }
+
+    function handleClick() {
+      var pageInput = document.getElementById("pageInput");
+      var limitInput = document.getElementById("limitInput");
+      var page = parseInt(pageInput.value);
+      var limit = parseInt(limitInput.value);
+
+      var lastRequest = getLastRequest();
+
+      if (isNaN(page) || page < 1 || page > 10) {
+        displayMessage("Номер страницы вне диапазона от 1 до 10");
+      } else if (isNaN(limit) || limit < 1 || limit > 10) {
+        displayMessage("Лимит вне диапазона от 1 до 10");
+      } else {
+        fetchData(page, limit);
+      }
+    }
+
+    var submitButton = document.getElementById("submitButton");
+    submitButton.addEventListener("click", handleClick);
+
+    var lastRequest = getLastRequest();
+
+    if (lastRequest) {
+      var pageInput = document.getElementById("pageInput");
+      var limitInput = document.getElementById("limitInput");
+
+      pageInput.value = lastRequest.page;
+      limitInput.value = lastRequest.limit;
+
+      fetchData(lastRequest.page, lastRequest.limit);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!-- Задача №4 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Приложение</title>
+  <style>
+    .message {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <input id="numberInput1" type="text" placeholder="Введите число от 100 до 300">
+  <input id="numberInput2" type="text" placeholder="Введите число от 100 до 300">
+  <button id="submitButton">Отправить</button>
+  <div id="messageContainer" class="message"></div>
+
+  <script>
+    function displayMessage(message) {
+      var messageContainer = document.getElementById("messageContainer");
+      messageContainer.textContent = message;
+    }
+
+    function fetchData(url) {
+      fetch(url)
+        .then(function(response) {
+          if (response.ok) {
+            console.log("Запрос выполнен успешно");
+          } else {
+            throw new Error("Ошибка HTTP: " + response.status);
+          }
+        })
+        .catch(function(error) {
+          console.log("Ошибка запроса: " + error.message);
+        });
+    }
+
+    function handleClick() {
+      var numberInput1 = document.getElementById("numberInput1");
+      var numberInput2 = document.getElementById("numberInput2");
+      var number1 = parseInt(numberInput1.value);
+      var number2 = parseInt(numberInput2.value);
+
+      if (isNaN(number1) || isNaN(number2) || number1 < 100 || number1 > 300 || number2 < 100 || number2 > 300) {
+        displayMessage("Одно из чисел вне диапазона от 100 до 300 или введено не число");
+      } else {
+        var url = "https://picsum.photos/" + number1 + "/" + number2;
+        fetchData(url);
+      }
+    }
+
+    var submitButton = document.getElementById("submitButton");
+    submitButton.addEventListener("click", handleClick);
+  </script>
+</body>
+</html>
